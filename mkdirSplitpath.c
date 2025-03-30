@@ -32,6 +32,7 @@ void mkdir(char pathName[]){
     newNode->name[strlen(baseName)]='\0';
     newNode->childPtr=NULL;
     newNode->siblingPtr=NULL;
+    newNode->parentPtr=NULL;
     if(currNode->childPtr==NULL){
         currNode->childPtr=newNode;
     }
@@ -42,7 +43,7 @@ void mkdir(char pathName[]){
         }
         childNode->siblingPtr=newNode;
     }
-    
+    newNode->parentPtr=currNode;
     printf("MKDIR SUCCESS: node %s successfully created\n",baseName);
     return;
     
