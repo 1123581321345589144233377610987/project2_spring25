@@ -6,30 +6,25 @@ extern struct NODE* cwd;
 //make directory
 void mkdir(char pathName[]){
     if(!(strcmp(pathName, "/"))){
-        printf("MKDIR ERROR: no path provided");
+        printf("MKDIR ERROR: no path provided\n");
         return;
     }
     
     //allocate space for all the strings
-    char* baseName=(char*)malloc((strlen(pathName)+1)*sizeof(char));
-    char* dirName=(char*)malloc((strlen(pathName)+1)*sizeof(char));
-    struct NODE* currNode=(struct NODE*)malloc(sizeof(struct NODE));
-    currNode=splitPath(pathName,baseName,dirName);
+    char baseName[64];
+    char dirName[64];
+    struct NODE* currNode=splitPath(pathName,baseName,dirName);
     struct NODE* newNode = (struct NODE*)malloc(sizeof(struct NODE));
-    if(currNode!=NULL){
-        newNode=currNode->childPtr;
+    if(currNode==NULL){
+        return;
     }
-    else{
-        newNode=NULL;
-    }
-    while(newNode!=NULL){
-        if(!(strcmp(newNode->name,baseName))){
+    struct NODE* childNode = currNode->childPtr;
+    while(childNode!=NULL){
+        if(!(strcmp(childNode->name,baseName))){
             printf("MKDIR ERROR: directory %s already exists\n",baseName);
-            free(baseName);
-            free(dirName);
             return;
         }
-        newNode=newNode->siblingPtr;
+        childNode=childNode->siblingPtr;
     }
     
     newNode->fileType='D';
@@ -37,16 +32,24 @@ void mkdir(char pathName[]){
     newNode->name[strlen(baseName)]='\0';
     newNode->childPtr=NULL;
     newNode->siblingPtr=NULL;
+    if(currNode->childPtr==NULL){
+        currNode->childPtr=newNode;
+    }
+    else{
+        childNode=currNode->childPtr;
+        while(childNode->siblingPtr!=NULL){
+            childNode=childNode->siblingPtr;
+        }
+        childNode->siblingPtr=newNode;
+    }
+    
     printf("MKDIR SUCCESS: node %s successfully created\n",baseName);
-    free(baseName);
-    free(dirName);
     return;
     
 }
 
 //handles tokenizing and absolute/relative pathing options
 struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
-
     for(int i=strlen(pathName)-1;i>=0;i--){
 //setting dirName and baseName
         if(i==0 || (i > 0 && pathName[i - 1] == '/')){
@@ -97,8 +100,6 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
                 currNode = childNode; // we traverse the tree to the next depth with this assignment
                 currDirName = strtok(NULL,"/"); 
             }
-            printf("DirName: %s/n",dirName);
-            printf("BaseName: %s/n",baseName);
             return currNode;
         }
     }
@@ -111,4 +112,3 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
 
     // YOUR CODE HERE
     //
-
