@@ -95,7 +95,7 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName){
                 }
 
                 if (childNode==NULL){
-                        printf("ERROR: directory %s does not exist \n", currDirName);
+                        printf("ERROR: directory %s does not exist\n", currDirName);
                         return NULL;
                 }
                 currNode = childNode; // we traverse the tree to the next depth with this assignment
